@@ -10,4 +10,5 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+maven-publish = { id = "org.gradle.maven-publish" }
 
