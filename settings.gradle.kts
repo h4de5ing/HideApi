@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "HideApi"
-include(":app")
+//include(":app")
 include(":hideapi")
