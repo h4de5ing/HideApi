@@ -29,23 +29,23 @@ android {
 dependencies {
     compileOnly(files("libs/classes.jar"))
 }
-//publishing {
-//    publications {
-//        register<MavenPublication>("release") {
-//            val today = SimpleDateFormat("yyyyMMdd").format(Date())
-//            groupId = "com.android.hideapi"
-//            artifactId = "hideapi"
-//            version = "1.0-${today}"
-//
-//            afterEvaluate {
-//                from(components["release"])
-//            }
-//        }
-//    }
-//
-//    repositories {
-//        mavenLocal()
-//        maven { url = uri("../../SystemFunction/SystemLib_repository") }
-//    }
-//}
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            val today = SimpleDateFormat("yyyyMMdd").format(Date())
+            groupId = "com.android.hideapi"
+            artifactId = "hideapi"
+            version = "1.0-${today}"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url = uri("../../SystemFunction/SystemLib_repository") }
+    }
+}
 //gradlew publish
