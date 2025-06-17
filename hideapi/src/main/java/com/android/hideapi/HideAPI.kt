@@ -1,5 +1,8 @@
 package com.android.hideapi
 
+import android.app.IActivityManager
+import android.content.Context
+import android.content.res.Configuration
 import android.net.IEthernetManager
 import android.net.IpConfiguration
 import android.net.LinkAddress
@@ -7,6 +10,7 @@ import android.net.NetworkUtils
 import android.net.ProxyInfo
 import android.net.StaticIpConfiguration
 import android.net.Uri
+import android.nfc.NfcAdapter
 import android.os.INetworkManagementService
 import android.os.ServiceManager
 import java.net.InetAddress
@@ -89,6 +93,31 @@ fun setEthernetIp(
         }
     } catch (e: Exception) {
         listener.invoke("failed: ${e.message}")
+        e.printStackTrace()
+    }
+}
+
+fun getConfiguration(): Configuration {
+    val ams =
+        IActivityManager.Stub.asInterface(ServiceManager.getService(Context.ACTIVITY_SERVICE))
+    return ams.configuration.let {
+        it.userSetLocale = true
+        it
+    }
+}
+
+fun NfcAdapter.enable2() {
+    try {
+        this.enable()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun NfcAdapter.disable2() {
+    try {
+        this.disable()
+    } catch (e: Exception) {
         e.printStackTrace()
     }
 }
