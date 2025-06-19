@@ -13,22 +13,10 @@ import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.INetworkManagementService
 import android.os.ServiceManager
-import java.net.InetAddress
-import java.net.UnknownHostException
-
-fun numericToInetAddress(numericAddress: String = "127.0.0.1"): InetAddress {
-    return try {
-//        InetAddress.getByName(numericAddress)
-        NetworkUtils.numericToInetAddress(numericAddress)
-    } catch (e: UnknownHostException) {
-        throw IllegalArgumentException("Invalid IP address format: $numericAddress", e)
-    }
-}
 
 fun setEthernetIp(
     mode: String,//IpConfigurationIpAssignment  0-static  1-DHCP 2-UNASSIGNED
     ip: String,
-//    mask: String,//用网络长度代替子网掩码
     netLength: Int,
     gateway: String,
     dns: List<String>,
@@ -68,13 +56,10 @@ fun setEthernetIp(
 
             val staticConfig = StaticIpConfiguration()
             if ("STATIC" == mode) {
-                StaticIpConfiguration.Builder()
-                    .setIpAddress(LinkAddress(numericToInetAddress(ip), netLength))
-                    .setGateway(numericToInetAddress(gateway))
-                    .build()
-                dns.forEach {
-                    if (it != "") staticConfig.addDnsServer(numericToInetAddress(it))
-                }
+                val mIpAddr = NetworkUtils.numericToInetAddress(ip)
+                staticConfig.ipAddress = LinkAddress(mIpAddr, netLength)
+                staticConfig.gateway = NetworkUtils.numericToInetAddress(gateway)
+                dns.forEach { staticConfig.addDnsServer(NetworkUtils.numericToInetAddress(it)) }
             }
 
             val ipConfig = IpConfiguration(assignment, proxySettings, staticConfig, proxyInfo)
@@ -98,8 +83,7 @@ fun setEthernetIp(
 }
 
 fun getConfiguration(): Configuration {
-    val ams =
-        IActivityManager.Stub.asInterface(ServiceManager.getService(Context.ACTIVITY_SERVICE))
+    val ams = IActivityManager.Stub.asInterface(ServiceManager.getService(Context.ACTIVITY_SERVICE))
     return ams.configuration.let {
         it.userSetLocale = true
         it
