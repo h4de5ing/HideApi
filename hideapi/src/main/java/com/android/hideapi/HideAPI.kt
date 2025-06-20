@@ -11,6 +11,7 @@ import android.net.ProxyInfo
 import android.net.StaticIpConfiguration
 import android.net.Uri
 import android.nfc.NfcAdapter
+import android.os.Build
 import android.os.INetworkManagementService
 import android.os.ServiceManager
 
@@ -67,8 +68,10 @@ fun setEthernetIp(
             listener.invoke("success")
 
             //这里在其他平台不通用,如果其他平台没有这2个方法，那么设置需要重启才能生效,或者修改系统setConfiguration实现，增加removeInterface(iface)；start()；就可以实现立即生效
-//            eth.Trackstop()
-//            eth.Trackstart()
+            if (Build.VERSION.SDK_INT < 31){//Android 12以下用这个方法可以实现立即生效
+                disableEthernet12(true)
+                disableEthernet12(false)
+            }
             //开启以太网
 //            net.setInterfaceUp(iface)
             //关闭以太网
@@ -101,6 +104,21 @@ fun NfcAdapter.enable2() {
 fun NfcAdapter.disable2() {
     try {
         this.disable()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+var iEthernetManager: IEthernetManager? = null
+fun disableEthernet12(disable: Boolean) {
+    try {
+        iEthernetManager = IEthernetManager.Stub.asInterface(ServiceManager.getService("ethernet"))
+        val methods = iEthernetManager?.javaClass?.methods?.map { it.name }
+        methods?.apply {
+            if (contains("Trackstop") && contains("Trackstart")) {
+                if (disable) iEthernetManager?.Trackstop()
+                else iEthernetManager?.Trackstart()
+            }
+        }
     } catch (e: Exception) {
         e.printStackTrace()
     }
